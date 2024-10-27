@@ -37,29 +37,32 @@ ESP_INTR_FLAG_INTRDISABLED：指定中断服务程序在初始化时不会被使
 */
 
 #include "uart.h"
-
-QueueHandle_t uart1_queue = NULL;
-
 /******************************************************************************
- * 函数描述: 串口初始化 8N1,无硬件流控，在接收完成后，通过queue启动接收任务
+ * 函数描述: 串口初始化 8N1,无硬件流控，在接收完成后，通过queue启动接收任务,设置queue设置为 5个缓冲区,大小为 512byte
  *          为了提高接收的及时性，有必要把接收任务的优先级提高
- * 参  数1: 串口波特率
- * 参  数2: 串口发送引脚
- * 参  数3: 串口接收引脚
  *******************************************************************************/
-void uart1_init(uint32_t baud, uint8_t tx, uint8_t rx)
+void uart_init(struct UART_PARAM *uart_para)
 {
-    uart_config_t uart_config = {};
 
-    uart_config.baud_rate = baud;
-    uart_config.data_bits = UART_DATA_8_BITS;
-    uart_config.parity = UART_PARITY_DISABLE;
-    uart_config.stop_bits = UART_STOP_BITS_1;
-    uart_config.flow_ctrl = UART_HW_FLOWCTRL_DISABLE;
-    uart_config.source_clk = UART_SCLK_DEFAULT;
-    ESP_ERROR_CHECK(uart_param_config(UART_NUM_1, &uart_config));
+    uart_config_t uart_cfg = {};
+    /* 分配内存 */
+    uart_para->buff = malloc(UART_BUFF_SIZE); // 注意这里使用箭头操作符
+    uart_cfg.baud_rate = uart_para->baud;
+    uart_cfg.data_bits = UART_DATA_8_BITS;
+    uart_cfg.parity = UART_PARITY_DISABLE;
+    uart_cfg.stop_bits = UART_STOP_BITS_1;
+    uart_cfg.flow_ctrl = UART_HW_FLOWCTRL_DISABLE;
+    uart_cfg.source_clk = UART_SCLK_DEFAULT;
 
-    ESP_ERROR_CHECK(uart_driver_install(UART_NUM_1, UART1_BUFF_SIZE, 0, 10, &uart1_queue, ESP_INTR_FLAG_LEVEL3 | ESP_INTR_FLAG_IRAM));
+    ESP_ERROR_CHECK(uart_param_config(uart_para->uart_num, &uart_cfg));
 
-    ESP_ERROR_CHECK(uart_set_pin(UART_NUM_1, tx, rx, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
+    ESP_ERROR_CHECK(uart_driver_install(uart_para->uart_num, UART_RX_SIZE, UART_TX_SIZE, UART_QUEUE_SIZE, &uart_para->queue, ESP_INTR_FLAG_LEVEL3 | ESP_INTR_FLAG_IRAM));
+
+    ESP_ERROR_CHECK(uart_set_pin(uart_para->uart_num, uart_para->tx, uart_para->rx, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
+}
+
+void uart_reset(struct UART_PARAM *uart_para)
+{
+    uart_driver_delete(uart_para->uart_num);
+    free(uart_para->buff);
 }

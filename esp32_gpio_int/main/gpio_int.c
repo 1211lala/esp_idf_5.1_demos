@@ -20,7 +20,6 @@
  *******************************************************************************/
 void gpio_isr_init(gpio_num_t gpio_num, gpio_int_type_t gpio_int_type, bool is_pull_up, gpio_isr_t isr_handler, void *arg)
 {
-    gpio_install_isr_service(0);
 
     gpio_config_t pin_cfg = {};
 
@@ -31,5 +30,5 @@ void gpio_isr_init(gpio_num_t gpio_num, gpio_int_type_t gpio_int_type, bool is_p
     pin_cfg.pull_up_en = is_pull_up;
     gpio_config(&pin_cfg);
 
-    gpio_isr_handler_add(0, isr_handler, arg);
+    gpio_isr_handler_add(gpio_num, isr_handler, arg);
 }

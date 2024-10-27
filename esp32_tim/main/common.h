@@ -1,5 +1,8 @@
-#ifndef  _COMMON_H_
+#ifndef _COMMON_H_
 
+/**
+ * 官方wiki     https://docs.espressif.com/projects/esp-idf/zh_CN/release-v5.1/esp32/api-reference/peripherals/gpio.html
+ */
 #include <stdio.h>
 #include <string.h>
 #include "freertos/FreeRTOS.h"

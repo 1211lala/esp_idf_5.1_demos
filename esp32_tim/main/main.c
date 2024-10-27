@@ -1,15 +1,8 @@
-/**
- * 官方wiki     https://docs.espressif.com/projects/esp-idf/zh_CN/release-v5.1/esp32/api-reference/peripherals/gpio.html
- * 更改工程名,主文件名      https://blog.csdn.net/mark_md/article/details/113884641
- */
+
 
 #include "common.h"
-#include "bspled.h"
-#include "bspkey.h"
-#include "p_exti.h"
-#include "p_adc.h"
-#include "p_uart.h"
-#include "p_tim.h"
+
+#include "tim.h"
 
 /*
 
@@ -40,12 +33,13 @@ bool timer_callback(void *arg)
 
 TaskHandle_t task_tim_handle = NULL;
 
+uint64_t cnt = 0;
 bool timer_callback(void *arg)
 {
     BaseType_t pxHigherPriorityTaskWoken = pdFALSE;
-
-    uint64_t value = timer_group_get_counter_value_in_isr(0, 0);
-    xQueueSendFromISR(tim_queue, &value, &pxHigherPriorityTaskWoken);
+    cnt++;
+    // uint64_t value = timer_group_get_counter_value_in_isr(0, 0);
+    xQueueSendFromISR(tim_queue, &cnt, &pxHigherPriorityTaskWoken);
     return pxHigherPriorityTaskWoken;
 }
 
@@ -57,17 +51,16 @@ void IRAM_ATTR task_tim0(void *arg)
         if (xQueueReceive(tim_queue, &value, portMAX_DELAY))
         {
             /* 如果中断时1ms会触发任务看门狗，因为LOG打印所需要的时间大于1ms*/
-            // ESP_LOGI("LOG", "tim0 value : %llu", value);
+            ESP_LOGI("LOG", "tim0 value : %llu", value);
 
-            led_blink();
+            // led_blink();
         }
     }
 }
 
 void app_main(void)
 {
-    led_general_init();
-    tim0_init(timer_callback, NULL, 2000);
+    tim0_init(timer_callback, NULL, 100000);
     tim_queue = xQueueCreate(10, sizeof(uint64_t));
     if (tim_queue == NULL)
     {

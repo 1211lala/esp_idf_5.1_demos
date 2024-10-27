@@ -5,7 +5,9 @@
     "gpio_int.h": "c",
     "common.h": "c",
     "p_uart.h": "c",
-    "uart.h": "c"
+    "uart.h": "c",
+    "string.h": "c",
+    "stdio.h": "c"
   },
   "idf.adapterTargetName": "esp32",
   "idf.flashType": "UART",

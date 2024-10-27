@@ -3,29 +3,31 @@
 #include "uart.h"
 
 TaskHandle_t task_uart_handle = NULL;
-
-void task_read_uart1(void *arg)
+uart_event_t event;
+struct UART_PARAM u1_para;
+void task_uart(void *arg)
 {
-    uart_event_t event;
+    u1_para.baud = 115200;
+    u1_para.tx = 25;
+    u1_para.rx = 26;
+    u1_para.uart_num = UART_NUM_1;
 
-    char *rec = (char *)malloc(100);
-    char *send = (char *)malloc(200);
-
-    uart1_init(115200, 25, 26);
+    uart_init(&u1_para);
     while (1)
     {
-        if (xQueueReceive(uart1_queue, (void *)&event, portMAX_DELAY) == pdTRUE)
+        if (xQueueReceive(u1_para.queue, (void *)&event, portMAX_DELAY) == pdTRUE)
         {
-            bzero(rec, 100);
+            bzero(u1_para.buff, UART_BUFF_SIZE);
             switch (event.type)
             {
             case UART_DATA:
-                int len = uart_read_bytes(UART_NUM_1, rec, event.size, portMAX_DELAY);
+                int len = uart_read_bytes(u1_para.uart_num, u1_para.buff, event.size, portMAX_DELAY);
                 if (len)
                 {
-                    rec[len] = '\0';
-                    sprintf(send, "rec-->%s\r\n", rec);
-                    uart_write_bytes(UART_NUM_1, send, strlen(send));
+                    u1_para.buff[len] = '\0';
+                    char temp[1024];
+                    sprintf(temp, "rec-->%s\r\n", u1_para.buff);
+                    uart_write_bytes(u1_para.uart_num, temp, strlen(temp));
                 }
                 break;
             default:
@@ -33,13 +35,11 @@ void task_read_uart1(void *arg)
             }
         }
     }
-    free(rec);
-    free(send);
     vTaskDelete(NULL);
 }
 
 void app_main(void)
 {
-    xTaskCreatePinnedToCore(task_read_uart1, "task_read_uart1", 1024 * 4, NULL, 10, &task_uart_handle, 1);
+    xTaskCreatePinnedToCore(task_uart, "task_uart", 1024 * 4, NULL, 5, &task_uart_handle, 1);
     vTaskDelete(NULL);
 }

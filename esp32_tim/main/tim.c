@@ -22,7 +22,7 @@ https://blog.csdn.net/m0_50064262/article/details/115407884
         void IRAM_ATTR timerIsr(void *arg)
         {
             // 获取自旋锁
-            timer_spinlock_take(0); 
+            timer_spinlock_take(0);
 
             //代码区1
             // 清除中断标志位
@@ -35,8 +35,16 @@ https://blog.csdn.net/m0_50064262/article/details/115407884
         }
 */
 
-#include "p_tim.h"
+#include "tim.h"
 
+struct TIM_PARAM
+{
+    uint8_t id[2];
+    timer_isr_t timer_isr_callback;
+    void *arg;
+    uint32_t target_cnt;
+    
+};
 QueueHandle_t tim_queue = NULL;
 
 /******************************************************************************
