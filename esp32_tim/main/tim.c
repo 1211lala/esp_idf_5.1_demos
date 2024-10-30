@@ -36,42 +36,30 @@ https://blog.csdn.net/m0_50064262/article/details/115407884
 */
 
 #include "tim.h"
-
-struct TIM_PARAM
-{
-    uint8_t id[2];
-    timer_isr_t timer_isr_callback;
-    void *arg;
-    uint32_t target_cnt;
-    
-};
-QueueHandle_t tim_queue = NULL;
-
+static const char *TAG = "timer";
 /******************************************************************************
- * 函数描述: 硬件定时器0的初始化，设置定时器计数频率为1M，可自动重加载，向上计数,初始哈时不开启定时器，需调用 timer_start(0, 0) 开启
+ * 函数描述: 硬件定时器的初始化，设置定时器计数频率，可自动重加载，向上计数,初始哈时不开启定时器，需调用 timer_start() 开启
  * 参  数1: 定时中断回调函数 bool (*timer_isr_t)(void *);
  * 参  数2: 定时器回调函数的参数
  * 参  数3: 定时器向上计数终值
  *******************************************************************************/
-void tim0_init(timer_isr_t timer_callback, void *arg, uint32_t value)
+void tim_init(struct TIM_PARAM *tim_para)
 {
     uint32_t apb_freq = rtc_clk_apb_freq_get();
-
-    uint32_t divider = apb_freq / 1000000;
+    ESP_LOGI(TAG, "TIM[%d][%d] freq = %ld", tim_para->id[0], tim_para->id[1], apb_freq);
+    uint32_t divider = apb_freq / tim_para->freq;
 
     timer_config_t config = {};
     config.alarm_en = TIMER_ALARM_EN;
     config.auto_reload = TIMER_AUTORELOAD_EN;
-    config.clk_src = TIMER_SRC_CLK_DEFAULT;
+    config.clk_src = TIMER_SRC_CLK_APB; /* 设置定时器时钟 */
     config.counter_dir = TIMER_COUNT_UP;
-    config.counter_en = TIMER_PAUSE;
+    config.counter_en = TIMER_PAUSE; /* 停止计时器 */
     config.divider = divider;
     // config.intr_type =
-    timer_init(0, 0, &config);
-
-    timer_set_counter_value(0, 0, 1);
-    timer_set_alarm_value(0, 0, value);
-    timer_enable_intr(0, 0);
-
-    timer_isr_callback_add(0, 0, timer_callback, arg, ESP_INTR_FLAG_IRAM);
+    timer_init(tim_para->id[0], tim_para->id[1], &config);
+    timer_set_counter_value(tim_para->id[0], tim_para->id[1], 1);
+    timer_set_alarm_value(tim_para->id[0], tim_para->id[1], tim_para->target_cnt);
+    timer_enable_intr(tim_para->id[0], tim_para->id[1]);
+    timer_isr_callback_add(tim_para->id[0], tim_para->id[1], tim_para->timer_isr_callback, tim_para->arg, ESP_INTR_FLAG_IRAM);
 }

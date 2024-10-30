@@ -1,11 +1,4 @@
-
-
-#include "common.h"
-
-#include "tim.h"
-
 /*
-
 我的理解
     freertos在执行任务A时被中断打断，在中断中又通过队列启动了B任务，
     如果 pxHigherPriorityTaskWoken 为 true 则直接进入任务B，
@@ -31,42 +24,90 @@ bool timer_callback(void *arg)
 则一直返回 false 或者FreeRTOS风格的 pdFALSE即可
 */
 
-TaskHandle_t task_tim_handle = NULL;
+#include "common.h"
 
-uint64_t cnt = 0;
+#include "tim.h"
+TaskHandle_t task_tim_handle = NULL;
+QueueHandle_t tim00_isr_queue;
+QueueHandle_t tim11_isr_queue;
+uint64_t cnt00 = 0;
+uint64_t cnt11 = 0;
 bool timer_callback(void *arg)
 {
     BaseType_t pxHigherPriorityTaskWoken = pdFALSE;
-    cnt++;
-    // uint64_t value = timer_group_get_counter_value_in_isr(0, 0);
-    xQueueSendFromISR(tim_queue, &cnt, &pxHigherPriorityTaskWoken);
+    struct TIM_PARAM *t = arg;
+    if (t->id[0] == 0 && t->id[1] == 0)
+    {
+        cnt00++;
+        xQueueSendFromISR(tim00_isr_queue, &cnt00, &pxHigherPriorityTaskWoken);
+    }
+    else if (t->id[0] == 1 && t->id[1] == 1)
+    {
+        cnt11++;
+        xQueueSendFromISR(tim11_isr_queue, &cnt11, &pxHigherPriorityTaskWoken);
+    }
     return pxHigherPriorityTaskWoken;
 }
 
-void IRAM_ATTR task_tim0(void *arg)
+void IRAM_ATTR task_tim00(void *arg)
 {
+    struct TIM_PARAM *t = arg;
+    timer_start(t->id[0], t->id[1]);
     while (1)
     {
         uint64_t value = 0;
-        if (xQueueReceive(tim_queue, &value, portMAX_DELAY))
+        if (xQueueReceive(tim00_isr_queue, &value, portMAX_DELAY))
         {
-            /* 如果中断时1ms会触发任务看门狗，因为LOG打印所需要的时间大于1ms*/
-            ESP_LOGI("LOG", "tim0 value : %llu", value);
-
-            // led_blink();
+            ESP_LOGI("task_tim00", "tim[%d][%d] value : %llu", t->id[0], t->id[1], value);
         }
     }
 }
+void IRAM_ATTR task_tim11(void *arg)
+{
+    struct TIM_PARAM *t = arg;
+    timer_start(t->id[0], t->id[1]);
+    while (1)
+    {
+        uint64_t value = 0;
+        if (xQueueReceive(tim11_isr_queue, &value, portMAX_DELAY))
+        {
+            ESP_LOGI("task_tim11", "tim[%d][%d] value : %llu", t->id[0], t->id[1], value);
+        }
+    }
+}
+struct TIM_PARAM tim_00 = {
 
+    .arg = &tim_00,
+    .freq = 1000000,
+    .id[0] = 0,
+    .id[1] = 0,
+    .target_cnt = 1000000,
+    .timer_isr_callback = timer_callback,
+};
+struct TIM_PARAM tim_11 = {
+
+    .arg = &tim_11,
+    .freq = 1000000,
+    .id[0] = 1,
+    .id[1] = 1,
+    .target_cnt = 100000,
+    .timer_isr_callback = timer_callback,
+};
 void app_main(void)
 {
-    tim0_init(timer_callback, NULL, 100000);
-    tim_queue = xQueueCreate(10, sizeof(uint64_t));
-    if (tim_queue == NULL)
+    tim_init(&tim_00);
+    tim_init(&tim_11);
+    tim00_isr_queue = xQueueCreate(4, sizeof(uint64_t));
+    tim11_isr_queue = xQueueCreate(4, sizeof(uint64_t));
+    if (tim00_isr_queue == NULL)
     {
-        ESP_LOGI("LOG", "队列初始化失败");
+        ESP_LOGE("app_main", "tim00_isr_queue init fail.");
     }
-    xTaskCreatePinnedToCore(task_tim0, "task_tim0", 1024 * 4, NULL, 10, &task_tim_handle, 1);
-    timer_start(0, 0);
+    if (tim11_isr_queue == NULL)
+    {
+        ESP_LOGE("app_main", "tim11_isr_queue init fail.");
+    }
+    xTaskCreatePinnedToCore(task_tim00, "task_tim00", 1024 * 4, (void *)&tim_00, 5, NULL, 1);
+    xTaskCreatePinnedToCore(task_tim11, "task_tim11", 1024 * 4, (void *)&tim_11, 5, NULL, 1);
     vTaskDelete(NULL);
 }

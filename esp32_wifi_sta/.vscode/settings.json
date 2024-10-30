@@ -1,0 +1,24 @@
+{
+  "C_Cpp.intelliSenseEngine": "default",
+  "files.associations": {
+    "gpio.h": "c",
+    "gpio_int.h": "c",
+    "common.h": "c",
+    "p_exti.h": "c",
+    "wifi_sta.h": "c",
+    "inet.h": "c",
+    "spiffs.h": "c",
+    "main.h": "c",
+    "esp_netif.h": "c",
+    "esp_wifi.h": "c",
+    "datafile.h": "c",
+    "nvs_flash.h": "c",
+    "esp_event.h": "c",
+    "esp_netif_ip_addr.h": "c",
+    "string.h": "c",
+    "unistd.h": "c"
+  },
+  "idf.adapterTargetName": "esp32",
+  "idf.flashType": "UART",
+  "idf.port": "/dev/ttyUSB0"
+}

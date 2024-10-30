@@ -4,15 +4,22 @@
     "gpio.h": "c",
     "gpio_int.h": "c",
     "common.h": "c",
-    "esp_log.h": "c",
-    "stdio.h": "c"
+    "spiffs.h": "c",
+    "unistd.h": "c",
+    "p_wifi_sta.h": "c",
+    "p_i2c_sht20.h": "c",
+    "p_gpttim.h": "c",
+    "sd_spi_fat.h": "c",
+    "sdmmc_cmd.h": "c",
+    "dirent.h": "c",
+    "string.h": "c",
+    "stat.h": "c",
+    "datafile.h": "c",
+    "esp_vfs_fat.h": "c"
   },
   "idf.adapterTargetName": "esp32",
   "idf.flashType": "UART",
   "idf.port": "/dev/ttyUSB0",
-  "idf.openOcdConfigs": [
-    "board/esp32-wrover-kit-3.3v.cfg"
-  ],
   "idf.espIdfPath": "/home/liuao/esp/v5.1.4/esp-idf",
   "idf.pythonBinPath": "/home/liuao/esp_tools/python_env/idf5.1_py3.8_env/bin/python",
   "idf.toolsPath": "/home/liuao/esp_tools",
@@ -21,5 +28,8 @@
     "OPENOCD_SCRIPTS": "/home/liuao/esp_tools/tools/openocd-esp32/v0.12.0-esp32-20230921/openocd-esp32/share/openocd/scripts",
     "ESP_ROM_ELF_DIR": "/home/liuao/esp_tools/tools/esp-rom-elfs/20230320/"
   },
-  "idf.gitPath": "git"
+  "idf.gitPath": "git",
+  "idf.openOcdConfigs": [
+    "board/esp32-wrover-kit-3.3v.cfg"
+  ]
 }

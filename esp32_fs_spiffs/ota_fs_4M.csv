@@ -1,0 +1,13 @@
+# ESP-IDF Partition Table
+# esp32内部嵌入的 flash 的 默认偏移地址 0x8000 处烧写一张分区表分区表的长度为 0xC00 字节,最多可以保存 95 条分区表条目。
+# MD5 校验和附加在分区表之后 用于在运行时验证分区表的完整性
+# 分区表占据了整个 flash 扇区，大小为 0x1000 (4 KB),因此，它后面的任何分区至少需要位于 (默认偏移地址) + 0x1000 处
+
+# Name(分区名), Type(主类型), SubType( 子类型), Offset(地址偏移), Size(大小), Flags(标记)
+nvs,            data,           nvs,            0x9000,         0x5000,
+otadata,        data,           ota,            0xe000,         0x2000,
+phy_init,       data,           phy,            0x10000,        0x10000,
+ota_0,          app,            ota_0,          0x20000,        0x150000,
+ota_1,          app,            ota_1,          0x170000,       0x150000,
+storage,        data,           spiffs,         0x2C0000,       0x100000
+
