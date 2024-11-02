@@ -1,0 +1,16 @@
+{
+  "C_Cpp.intelliSenseEngine": "default",
+  "files.associations": {
+    "gpio.h": "c",
+    "gpio_int.h": "c",
+    "common.h": "c",
+    "queue.h": "c",
+    "adc.h": "c",
+    "datafile.h": "c",
+    "adc_cali_scheme.h": "c",
+    "adc_oneshot.h": "c"
+  },
+  "idf.adapterTargetName": "esp32",
+  "idf.flashType": "UART",
+  "idf.port": "/dev/ttyUSB0"
+}

@@ -8,14 +8,29 @@ struct FLASHFAT flashfat = {
     .partition_label = "storage",
     .mount_config.allocation_unit_size = CONFIG_WL_SECTOR_SIZE,
     .mount_config.disk_status_check_enable = false,
-    .mount_config.format_if_mount_failed = true,
-    .mount_config.max_files = 5,
+    .mount_config.format_if_mount_failed = false,
+    .mount_config.max_files = 3,
     .wl_handle = WL_INVALID_HANDLE,
 };
 
-void flashfat_test(void *arg)
+struct SDFAT sdfat = {
+    .spi_host = SPI2_HOST,
+    .freq = 20000,
+    .cs = 4,
+    .mosi = 23,
+    .miso = 19,
+    .sck = 18,
+    .root_path = "/sdfat",
+    .mount_cfg.allocation_unit_size = 1024 * 2,
+    .mount_cfg.disk_status_check_enable = false,
+    .mount_cfg.format_if_mount_failed = false,
+    .mount_cfg.max_files = 4,
+};
+void fatfs_test(void *arg)
 {
     flashfat_mount(&flashfat);
+    sdfat_mount(&sdfat);
+    list_files(sdfat.root_path);
     while (1)
     {
         vTaskDelay(50);
@@ -24,6 +39,6 @@ void flashfat_test(void *arg)
 
 void app_main()
 {
-    xTaskCreate(flashfat_test, "flashfat_test", 1024 * 10, NULL, 5, NULL);
+    xTaskCreate(fatfs_test, "fatfs_test", 1024 * 5, NULL, 5, NULL);
     vTaskDelete(NULL);
 }

@@ -18,7 +18,10 @@
     "esp_vfs_fat.h": "c",
     "norflash_fatfs.h": "c",
     "spifat.h": "c",
-    "esp_system.h": "c"
+    "esp_system.h": "c",
+    "memory": "c",
+    "semaphore": "c",
+    "stop_token": "c"
   },
   "idf.adapterTargetName": "esp32",
   "idf.flashType": "UART",

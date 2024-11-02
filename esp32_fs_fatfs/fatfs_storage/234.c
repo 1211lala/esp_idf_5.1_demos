@@ -12,7 +12,7 @@
 #define SD_OK 0
 #define SD_ERR -1
 
-int sd_init_mount_fat(void);
+int sdfat_mount(void);
 int fatfs_write(const char *path, char *data, uint32_t size);
 int fatfs_read(const char *path, char **buffer, uint32_t max_size);
 int isexist(const char *path);

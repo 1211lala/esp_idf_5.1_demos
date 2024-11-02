@@ -42,7 +42,7 @@ static const char *TAG = "sdcard";
  * 函数描述: spi总线初始化SD卡并挂载fatfs,在初始化前一定要设置为fat32模式
  * 参  数1:
  *******************************************************************************/
-int sd_init_mount_fat(void)
+int sdfat_mount(void)
 {
     esp_err_t ret;
     /* 挂载文件系统的参数, 如果 format_if_mount_failed = true 则在挂载fatfs失败后格式化SD卡 */
