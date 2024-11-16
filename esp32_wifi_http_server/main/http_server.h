@@ -10,6 +10,7 @@ struct HTTP_URL
     httpd_handle_t server;
     uint16_t port;
 };
+int http_start(struct HTTP_URL *hu);
 
 int http_register_uri(struct HTTP_URL *hu, const httpd_uri_t *url);
 
