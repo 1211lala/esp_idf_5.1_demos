@@ -5,8 +5,10 @@ TaskHandle_t wifi_handle;
 struct WIFI_PARAM wp = {
     .esp_event_cb = wifi_event_handler,
     .retry_num = 0,
-    .info.ssid = "艾可舒",
-    .info.password = "ai666888",
+    // .info.ssid = "艾可舒",
+    // .info.password = "ai666888",
+    .info.ssid = "Xiaomi_4C",
+    .info.password = "121314liuAO",
     .is_connect = false,
 };
 

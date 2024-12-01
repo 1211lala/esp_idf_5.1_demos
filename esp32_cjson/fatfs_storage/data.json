@@ -1,0 +1,27 @@
+{
+    "ssid": "MyWiFi",
+    "password": "password123",
+    "port": 2000,
+    "IntArray": [
+        51,
+        15,
+        63,
+        22,
+        96
+    ],
+    "ip_info": {
+        "ip": "192.168.1.100",
+        "gateway": "192.168.1.1",
+        "subnet": "255.255.255.0"
+    },
+    "info": [
+        {
+            "name": "liuao",
+            "year": 18
+        },
+        {
+            "name": "xiaoming",
+            "year": 18
+        }
+    ]
+}
