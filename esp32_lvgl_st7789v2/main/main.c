@@ -96,3 +96,4 @@ void app_main()
     // wifi_sta_init(&wp, wifi_event_handler);
     xTaskCreate(task_led, "task_led", 1024 * 4, NULL, 5, &wifi_handle);
 }
+ 

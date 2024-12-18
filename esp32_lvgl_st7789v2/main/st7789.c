@@ -41,7 +41,7 @@ true   Benchmark your system
 #define LCD_SPI_PORT SPI2_HOST // 使用的spi总线
 
 #define LCD_CLK 18   // lcd的clk引脚
-#define LCD_MOSI 23  // lcd的sda引脚
+#define LCD_MOSI 5  // lcd的sda引脚
 #define LCD_MISO -1 // lcd的miso引脚
 
 #define LCD_DC 16                                 // lcd的dc引脚
