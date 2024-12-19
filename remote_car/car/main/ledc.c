@@ -28,7 +28,7 @@ struct Motor Motor[2] = {
         .in2Pin = AIN2,
         .pwmPin = AINPWM,
         .speed = 0,
-        .angle = 128,
+        .angle = 0,
     },
 #ifdef USE_MOTORB
     {
@@ -134,11 +134,59 @@ void motor_set_params(struct Motor *motor)
     ledc_update_duty(LEDC_HIGH_SPEED_MODE, (motor)->chaneel);
 }
 
+void server_cfg(void)
+{
+    /* 配置定时器 LEDC_TIMER_1 */
+    ledc_timer_config_t ledc_timer = {};
+    ledc_timer.speed_mode = LEDC_HIGH_SPEED_MODE;
+    ledc_timer.duty_resolution = LEDC_TIMER_10_BIT;
+    ledc_timer.timer_num = LEDC_TIMER_1;
+    ledc_timer.freq_hz = 50;
+    ledc_timer.clk_cfg = LEDC_AUTO_CLK;
+    ledc_timer_config(&ledc_timer);
+
+    /* 配置通道 LEDC_TIMER_1 ->LEDC_CHANNEL_2*/
+    ledc_channel_config_t ledc_channel = {};
+    ledc_channel.channel = LEDC_CHANNEL_2;
+    ledc_channel.gpio_num = SERVER;
+    ledc_channel.hpoint = 0;
+    ledc_channel.duty = 0;
+    ledc_channel.speed_mode = LEDC_HIGH_SPEED_MODE;
+    ledc_channel.timer_sel = LEDC_TIMER_1;
+    ledc_channel_config(&ledc_channel);
+}
+/**
+ *
+ * 一个周期 20ms   50hz
+ * 20ms / 1024 = 0.0195ms
+    0度-----------0.5ms   25
+    45度----------1ms     50
+    90度-----------1.5ms  75
+    135度----------2.0ms  100
+    180度-----------2.5ms 125
+
+    100 / 180 = 0.5555;
+ */
+void server_angle(int8_t angle)
+{
+    int8_t temp = 0;
+
+    if (angle > 75)
+        angle = 75;
+    if (angle < -75)
+        angle = -75;
+
+    temp = 75 + 0.5555 * angle;
+    ledc_set_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_2, temp);
+    ledc_update_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_2);
+}
 /****************************************************************************************************************** */
 
 void task_ledc(void *arg)
 {
     motor_cfg(Motor);
+    server_cfg();
+    server_angle(0);
     while (1)
     {
         if (MotorA.speed > 0)
@@ -147,7 +195,7 @@ void task_ledc(void *arg)
         }
         else if (MotorA.speed < 0)
         {
-            MotorA.dir =RIGHT;
+            MotorA.dir = RIGHT;
         }
         else
         {
@@ -156,6 +204,9 @@ void task_ledc(void *arg)
         MotorA.duty = abs(MotorA.speed);
 
         motor_set_params(&MotorA);
+        server_angle(MotorA.angle);
+
+        printf("MotorA.angle: %d\n", MotorA.angle);
         vTaskDelay(100 / portTICK);
     }
 }

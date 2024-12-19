@@ -1,5 +1,5 @@
 #include "wifi_ap.h"
-
+#include "remote.h"
 /*************************************************************************************
  *
  *************************************************************************************/
@@ -66,6 +66,7 @@ void ap_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, 
     if (event_id == WIFI_EVENT_AP_START)
     {
         xEventGroupSetBits(a->event_group, AP_IS_START);
+        gpio_set_level(LED, true);
         ESP_LOGI("wifi_event_handler", "AP started");
     }
     else if (event_id == WIFI_EVENT_AP_STOP)
@@ -74,10 +75,12 @@ void ap_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, 
     }
     else if (event_id == WIFI_EVENT_AP_STACONNECTED)
     {
+        a->connects += 1;
         ESP_LOGI("wifi_event_handler", "have a new device connect");
     }
     else if (event_id == WIFI_EVENT_AP_STADISCONNECTED)
     {
+        a->connects -= 1;
         ESP_LOGE("wifi_event_handler", "have a device disconnect");
     }
 }

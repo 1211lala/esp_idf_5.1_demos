@@ -16,7 +16,8 @@
     "esp_netif.h": "c",
     "wifi_tcp.h": "c",
     "event_groups.h": "c",
-    "sockets.h": "c"
+    "sockets.h": "c",
+    "remote.h": "c"
   },
   "idf.adapterTargetName": "esp32",
   "idf.flashType": "UART",

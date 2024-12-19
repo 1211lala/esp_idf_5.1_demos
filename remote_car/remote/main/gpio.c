@@ -42,7 +42,7 @@ void gpio_general_init(gpio_num_t gpio_num, gpio_mode_t gpio_mode, bool is_pull_
  * 函数描述: GPIO输出状态翻转
  * GPIO只有在使用 GPIO_MODE_INPUT_OUTPUT 模式时才可以翻转
  *******************************************************************************/
-void gpio_tiggle(gpio_num_t gpio_num)
+void gpio_toggle(gpio_num_t gpio_num)
 {
     gpio_set_level(gpio_num, !gpio_get_level(gpio_num));
 }

@@ -22,11 +22,12 @@ struct WIFI_INFO
 };
 struct WIFI_PARAM
 {
-    struct WIFI_INFO info;
-    EventGroupHandle_t event_group;
-    esp_event_handler_t esp_event_cb;
-    uint8_t retry_num;
-    bool is_connect;
+    struct WIFI_INFO info;            // wifi信息
+    EventGroupHandle_t event_group;   // 事件组
+    esp_event_handler_t esp_event_cb; // wifi回调
+    uint8_t retry_num;                // 重连次数, sta模式下使用
+    bool is_connect;                  // wifi是否连接成功, sta模式下使用
+    uint8_t connects;                 // sta连接数, ap模式下使用
 };
 extern struct WIFI_PARAM ap;
 
