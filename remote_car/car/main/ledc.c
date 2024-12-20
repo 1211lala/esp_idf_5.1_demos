@@ -171,6 +171,8 @@ void server_angle(int8_t angle)
 {
     int8_t temp = 0;
 
+    angle = -angle;
+
     if (angle > 75)
         angle = 75;
     if (angle < -75)
@@ -191,11 +193,11 @@ void task_ledc(void *arg)
     {
         if (MotorA.speed > 0)
         {
-            MotorA.dir = LEFT;
+            MotorA.dir = RIGHT;
         }
         else if (MotorA.speed < 0)
         {
-            MotorA.dir = RIGHT;
+            MotorA.dir = LEFT;
         }
         else
         {

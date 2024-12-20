@@ -45,8 +45,8 @@ true   Benchmark your system
 #define LCD_MISO -1 // lcd的miso引脚
 
 #define LCD_DC 16                                 // lcd的dc引脚
-#define LCD_CS 27                                 // lcd的cs引脚
-#define LCD_PIXEL_CLOCK_HZ_SPI (80 * 1000 * 1000) // lcd的spi的频率40~80mhz都可以，推荐40mhz
+#define LCD_CS 25                                 // lcd的cs引脚
+#define LCD_PIXEL_CLOCK_HZ_SPI (40 * 1000 * 1000) // lcd的spi的频率40~80mhz都可以，推荐40mhz
 
 #define LCD_RST 17 // lcd的rst引脚
 

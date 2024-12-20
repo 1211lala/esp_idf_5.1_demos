@@ -2,7 +2,7 @@
 #include "driver/gpio.h"
 #include "driver/ledc.h"
 
-#define BRIGHTNESS_PIN 19
+#define BRIGHTNESS_PIN 15
 
 #define ENABLE_LEVEL 1
 // LEDC_LOW_SPEED_MODE

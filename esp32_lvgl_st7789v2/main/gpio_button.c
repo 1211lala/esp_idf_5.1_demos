@@ -3,9 +3,9 @@
 #include "gpio_button.h"
 #include "lvgl.h"
 
-#define PREV_BTN 25
-#define NEXT_BTN 26
-#define ENTER_BTN 14
+#define PREV_BTN 36
+#define NEXT_BTN 34
+#define ENTER_BTN 39
 
 #define ACTIVE_LEVEL 0
 
