@@ -9,6 +9,7 @@
 #include "freertos/event_groups.h"
 #include "driver/gpio.h"
 #include "esp_log.h"
+#include "lwip/sockets.h"
 #include "sdkconfig.h"
 
 #define portTICK 10
@@ -48,5 +49,5 @@
 #define SERVER 13
 /* 蜂鸣器引脚 */
 #define BEEP 12
-
+#define LED 2
 #endif // ! _DATAFILE_H_

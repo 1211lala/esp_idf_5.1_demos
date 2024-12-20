@@ -206,7 +206,7 @@ void task_ledc(void *arg)
         motor_set_params(&MotorA);
         server_angle(MotorA.angle);
 
-        printf("MotorA.angle: %d\n", MotorA.angle);
+        printf("MotorA.speed: %d MotorA.angle: %d\n", MotorA.speed, MotorA.angle);
         vTaskDelay(100 / portTICK);
     }
 }

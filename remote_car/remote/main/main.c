@@ -88,6 +88,7 @@ struct ADC_CHANNEL adc1_chan[4] = {
 };
 
 #define ERROR_RANGE 150
+#define AVERAGE 25
 void adc_key_task(void *arg)
 {
     /* 包含adc按键的数据队列 */
@@ -155,30 +156,30 @@ void adc_key_task(void *arg)
                 if (abs(lx) > ERROR_RANGE)
                 {
                     if (lx > 0)
-                        remote_value.lx = (lx - ERROR_RANGE) / 15;
+                        remote_value.lx = (lx - ERROR_RANGE) / AVERAGE;
                     else
-                        remote_value.lx = (lx + ERROR_RANGE) / 15;
+                        remote_value.lx = (lx + ERROR_RANGE) / AVERAGE;
                 }
                 if (abs(ly) > ERROR_RANGE)
                 {
                     if (ly > 0)
-                        remote_value.ly = (ly - ERROR_RANGE) / 15;
+                        remote_value.ly = (ly - ERROR_RANGE) / AVERAGE;
                     else
-                        remote_value.ly = (ly + ERROR_RANGE) / 15;
+                        remote_value.ly = (ly + ERROR_RANGE) / AVERAGE;
                 }
                 if (abs(ry) > ERROR_RANGE)
                 {
                     if (ry > 0)
-                        remote_value.ry = (ry - ERROR_RANGE) / 15;
+                        remote_value.ry = (ry - ERROR_RANGE) / AVERAGE;
                     else
-                        remote_value.ry = (ry + ERROR_RANGE) / 15;
+                        remote_value.ry = (ry + ERROR_RANGE) / AVERAGE;
                 }
                 if (abs(rx) > ERROR_RANGE)
                 {
                     if (rx > 0)
-                        remote_value.rx = (rx - ERROR_RANGE) / 15;
+                        remote_value.rx = (rx - ERROR_RANGE) / AVERAGE;
                     else
-                        remote_value.rx = (rx + ERROR_RANGE) / 15;
+                        remote_value.rx = (rx + ERROR_RANGE) / AVERAGE;
                 }
                 xQueueSend(dataQuene, &remote_value, 0);
             }
@@ -270,13 +271,13 @@ void led_task(void *arg)
     {
         if (ap.connects == 0)
         {
-            gpio_set_level(LED, false);
-            vTaskDelay(300 / portTICK);
+            gpio_toggle(LED);
+            vTaskDelay(200 / portTICK);
         }
         if (ap.connects && is_open_tcp == 0)
         {
             gpio_toggle(LED);
-            vTaskDelay(700 / portTICK);
+            vTaskDelay(1000 / portTICK);
         }
         if (ap.connects && is_open_tcp)
         {
