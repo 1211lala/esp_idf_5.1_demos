@@ -5,8 +5,10 @@
 
 void tcp_client_task(void *arg);
 void led_task(void *arg);
+
 TaskHandle_t ledc_handle;
 TaskHandle_t motor_handle;
+
 bool is_connect_server = false;
 
 struct WIFI_PARAM sta = {
@@ -19,9 +21,13 @@ struct WIFI_PARAM sta = {
 
 void app_main()
 {
+    beep_cfg();
+
     gpio_general_init(LED, GPIO_MODE_INPUT_OUTPUT, true);
-    if (pdPASS != xTaskCreate(led_task, "led_task", 1024 * 4, NULL, 3, NULL))
+
+    if (pdPASS != xTaskCreate(led_task, "led_task", 1024 * 4, NULL, 1, NULL))
     {
+        ESP_LOGE("app_main", "led_task create failed!!!");
     }
     sta.event_group = xEventGroupCreate();
     wifi_sta_scan_connect(&sta);
@@ -31,11 +37,13 @@ void app_main()
     }
     ESP_LOGI("app_main", "sta is connect!!!");
 
-    if (pdPASS != xTaskCreate(task_ledc, "task_ledc", 1024 * 4, NULL, 4, &ledc_handle))
+    if (pdPASS != xTaskCreate(task_ledc, "task_ledc", 1024 * 4, NULL, 5, &ledc_handle))
     {
+        ESP_LOGE("app_main", "task_ledc create failed!!!");
     }
-    if (pdPASS != xTaskCreate(tcp_client_task, "tcp_client_task", 1024 * 4, NULL, 5, NULL))
+    if (pdPASS != xTaskCreate(tcp_client_task, "tcp_client_task", 1024 * 4, NULL, 3, NULL))
     {
+        ESP_LOGE("app_main", "tcp_client_task create failed!!!");
     }
 }
 
@@ -76,12 +84,18 @@ connect_server:
         }
         MotorA.speed = r_buf[2] - 0x80;
         MotorA.angle = r_buf[3] - 0x80;
+
+        xTaskNotify(ledc_handle, 1, eNoAction);
     }
     close(tcpfd);
 }
 
 void led_task(void *arg)
 {
+    beep_set(4000, 1024 / 2);
+    vTaskDelay(500 / portTICK);
+    beep_set(4000, 0);
+
     while (1)
     {
         if (!sta.is_connect)

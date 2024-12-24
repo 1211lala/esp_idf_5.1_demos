@@ -39,4 +39,8 @@ void motor_cfg(struct Motor *motor);
 void motor_set_params(struct Motor *motor);
 
 void task_ledc(void *arg);
+
+void beep_cfg(void);
+void beep_set(uint16_t freq, uint16_t duty);
+
 #endif

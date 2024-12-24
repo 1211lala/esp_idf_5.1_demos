@@ -155,6 +155,7 @@ void server_cfg(void)
     ledc_channel.timer_sel = LEDC_TIMER_1;
     ledc_channel_config(&ledc_channel);
 }
+
 /**
  *
  * 一个周期 20ms   50hz
@@ -182,33 +183,64 @@ void server_angle(int8_t angle)
     ledc_set_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_2, temp);
     ledc_update_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_2);
 }
-/****************************************************************************************************************** */
 
+void beep_cfg(void)
+{
+    /* 配置定时器 LEDC_TIMER_2 */
+    ledc_timer_config_t ledc_timer = {};
+    ledc_timer.speed_mode = LEDC_HIGH_SPEED_MODE;
+    ledc_timer.duty_resolution = LEDC_TIMER_10_BIT;
+    ledc_timer.timer_num = LEDC_TIMER_2;
+    ledc_timer.freq_hz = 4000;
+    ledc_timer.clk_cfg = LEDC_AUTO_CLK;
+    ledc_timer_config(&ledc_timer);
+
+    /* 配置通道 LEDC_TIMER_1 ->LEDC_CHANNEL_2*/
+    ledc_channel_config_t ledc_channel = {};
+    ledc_channel.channel = LEDC_CHANNEL_4;
+    ledc_channel.gpio_num = BEEP;
+    ledc_channel.hpoint = 0;
+    ledc_channel.duty = 0;
+    ledc_channel.speed_mode = LEDC_HIGH_SPEED_MODE;
+    ledc_channel.timer_sel = LEDC_TIMER_2;
+    ledc_channel_config(&ledc_channel);
+}
+
+void beep_set(uint16_t freq, uint16_t duty)
+{
+    ledc_set_freq(LEDC_HIGH_SPEED_MODE, LEDC_TIMER_2, freq);
+    ledc_set_duty(LEDC_HIGH_SPEED_MODE, LEDC_TIMER_2, duty);
+    ledc_update_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_4);
+}
+/****************************************************************************************************************** */
 void task_ledc(void *arg)
 {
     motor_cfg(Motor);
     server_cfg();
     server_angle(0);
+    uint32_t val = 0;
     while (1)
     {
-        if (MotorA.speed > 0)
+        if (pdPASS == xTaskNotifyWait(0x0000000, 0x00000000, &val, portMAX_DELAY))
         {
-            MotorA.dir = RIGHT;
-        }
-        else if (MotorA.speed < 0)
-        {
-            MotorA.dir = LEFT;
-        }
-        else
-        {
-            MotorA.dir = STOP;
-        }
-        MotorA.duty = abs(MotorA.speed);
+            if (MotorA.speed > 0)
+            {
+                MotorA.dir = RIGHT;
+            }
+            else if (MotorA.speed < 0)
+            {
+                MotorA.dir = LEFT;
+            }
+            else
+            {
+                MotorA.dir = STOP;
+            }
+            MotorA.duty = abs(MotorA.speed);
 
-        motor_set_params(&MotorA);
-        server_angle(MotorA.angle);
+            motor_set_params(&MotorA);
+            server_angle(MotorA.angle);
 
-        printf("MotorA.speed: %d MotorA.angle: %d\n", MotorA.speed, MotorA.angle);
-        vTaskDelay(100 / portTICK);
+            printf("MotorA.speed: %d MotorA.angle: %d\n", MotorA.speed, MotorA.angle);
+        }
     }
 }
