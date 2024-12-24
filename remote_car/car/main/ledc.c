@@ -195,12 +195,12 @@ void beep_cfg(void)
     ledc_timer.clk_cfg = LEDC_AUTO_CLK;
     ledc_timer_config(&ledc_timer);
 
-    /* 配置通道 LEDC_TIMER_1 ->LEDC_CHANNEL_2*/
+    /* 配置通道 LEDC_TIMER_2 ->LEDC_CHANNEL_2*/
     ledc_channel_config_t ledc_channel = {};
     ledc_channel.channel = LEDC_CHANNEL_4;
     ledc_channel.gpio_num = BEEP;
     ledc_channel.hpoint = 0;
-    ledc_channel.duty = 0;
+    ledc_channel.duty = 1024/100;
     ledc_channel.speed_mode = LEDC_HIGH_SPEED_MODE;
     ledc_channel.timer_sel = LEDC_TIMER_2;
     ledc_channel_config(&ledc_channel);
@@ -209,7 +209,7 @@ void beep_cfg(void)
 void beep_set(uint16_t freq, uint16_t duty)
 {
     ledc_set_freq(LEDC_HIGH_SPEED_MODE, LEDC_TIMER_2, freq);
-    ledc_set_duty(LEDC_HIGH_SPEED_MODE, LEDC_TIMER_2, duty);
+    ledc_set_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_4, duty);
     ledc_update_duty(LEDC_HIGH_SPEED_MODE, LEDC_CHANNEL_4);
 }
 /****************************************************************************************************************** */

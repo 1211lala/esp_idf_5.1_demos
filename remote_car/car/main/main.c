@@ -21,7 +21,6 @@ struct WIFI_PARAM sta = {
 
 void app_main()
 {
-    beep_cfg();
 
     gpio_general_init(LED, GPIO_MODE_INPUT_OUTPUT, true);
 
@@ -90,14 +89,54 @@ connect_server:
     close(tcpfd);
 }
 
+
+// 小燕子
+uint8_t music[] = {3, 5, 8, 6, 5, 13, // 音调
+                   3, 5, 6, 8, 5, 13,
+                   8, 10, 9, 8, 9, 8, 6, 8, 5, 13,
+                   3, 5, 6, 5, 6, 8, 9, 5, 6, 13,
+                   3, 2, 1, 2, 13,
+                   2, 2, 3, 5, 5, 8, 2, 3, 5, 13};
+
+uint8_t xxtime[] = {2, 2, 2, 2, 6, 4, // 时间
+                    2, 2, 2, 2, 6, 4,
+                    6, 2, 4, 4, 2, 2, 2, 2, 6, 4,
+                    6, 2, 4, 2, 2, 4, 2, 2, 6, 4,
+                    2, 2, 4, 6, 4,
+                    4, 2, 2, 4, 4, 4, 2, 2, 6, 4};
+// static int old;
+// for (int i = 0; i < sizeof(music); i++)
+// {
+//     int index = music[i];
+//     if (index == 13)
+//     {
+//         beep_set(sound[index], 0);
+//     }
+//     else
+//     {
+//         beep_set(sound[index], sound[index] / 2);
+//     }
+//     int cnt = xxtime[i];
+//     while (cnt--)
+//     {
+//         vTaskDelay(100 / portTICK);
+//     }
+// }
+//                   低7  1     2   3    4    5    6    7   高1  高2   高3  高4  高5 不发音
+uint16_t sound[] = {247, 262, 294, 330, 349, 392, 440, 494, 523, 587, 659, 698, 784, 10000};
 void led_task(void *arg)
 {
-    beep_set(4000, 1024 / 2);
-    vTaskDelay(500 / portTICK);
-    beep_set(4000, 0);
+    beep_cfg();
 
+    for (int i = 0; i < 12; i++)
+    {
+        beep_set(sound[i], sound[i] /( i + 1));
+        vTaskDelay(60 / portTICK);
+    }
+    beep_set(4000, 0);
     while (1)
     {
+
         if (!sta.is_connect)
         {
             gpio_tiggle(LED);
