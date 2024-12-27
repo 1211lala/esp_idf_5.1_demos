@@ -1,0 +1,7 @@
+{
+    "C_Cpp.intelliSenseEngine": "default",
+    "idf.espIdfPath": "/home/liuao/esp/v5.1.4/esp-idf",
+    "idf.toolsPath": "/home/liuao/esp_tools",
+    "idf.flashType": "UART",
+    "idf.port": "/dev/ttyUSB0"
+}
